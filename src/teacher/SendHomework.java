@@ -20,12 +20,20 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 @WebServlet(name = "SendHomework", urlPatterns = "/Teacher/SendHomework")
 public class SendHomework extends HttpServlet {
+
+    // 老师名字
+    private String name;
+
+    private String title = "您有新的作业";
+
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
     }
@@ -37,10 +45,7 @@ public class SendHomework extends HttpServlet {
         response.setContentType("text/html;charset=utf-8");
         // get params
         String account = request.getParameter("account");
-
         String userAccountStr = request.getParameter("to");
-        ArrayList<String> userAl = new ArrayList<>();
-
         String size = request.getParameter("size");
         String[] subjects = request.getParameterValues("subject");
         String[] optionAs = request.getParameterValues("optionA");
@@ -48,8 +53,11 @@ public class SendHomework extends HttpServlet {
         String[] optionCs = request.getParameterValues("optionC");
         String[] optionDs = request.getParameterValues("optionD");
         String[] keys = request.getParameterValues("key");
+
+        ArrayList<String> userAl = new ArrayList<>();
+
         // 获取老师名字赋值给name
-        String name = getTeacherName(account);
+        name = getTeacherName(account);
 
         // set receivers
         if (userAccountStr.contains(",")) {
@@ -89,13 +97,20 @@ public class SendHomework extends HttpServlet {
      * @return 组装好的作业内容
      */
     private String assembleMainBody(String size) {
+        // 时间
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
         String[] arr = new String[Homework.homeworkList.size()];
         int i = 0;
         for (Homework hw : Homework.homeworkList) {
             arr[i++] = hw.getHomeworkItem();
         }
-        return "<size>" + size + "</size>"
-                + StringUtils.join(arr);
+        return "<category>homework</category>" //通知类型
+                + "<title>" + title + "</title>" //标题
+                + "<name>" + name + "</name>" //老师名字
+                + "<time>" + df.format(new Date()) + "</time>" //发送时间
+                + "<size>" + size + "</size>" //作业条数
+                + StringUtils.join(arr); //作业内容
 
     }
 
@@ -133,7 +148,6 @@ public class SendHomework extends HttpServlet {
     private String sendHomeworkToUserAccounts(String name, String content, List<String> userAccountList) throws Exception {
         Constants.useOfficial();
         Sender sender = new Sender("dQrTRKGpbYyOkJXi13sfIA==");
-        String title = "您有新的作业";
         String description = name + "老师布置了新的作业！";
 
         Message message = new Message.Builder()

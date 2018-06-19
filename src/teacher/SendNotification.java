@@ -19,8 +19,10 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 @WebServlet(name = "SendNotification", urlPatterns = "/Teacher/SendNotification")
@@ -68,11 +70,13 @@ public class SendNotification extends HttpServlet {
             userAl.add(userAccountStr);
         }
 
+        String finContent = assembleContent(name, title, content);
+
         // 发送结果
         String res = null;
         try {
             // 发送通知
-            res = sendMessageToUserAccounts(name, title, content, userAl);
+            res = sendMessageToUserAccounts(name, title, finContent, userAl);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -80,6 +84,23 @@ public class SendNotification extends HttpServlet {
 
         PrintWriter pw = response.getWriter();
         pw.write(res);
+    }
+
+    /**
+     * 组装content
+     *
+     */
+    private String assembleContent(String name, String title, String content) {
+
+        // 时间
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+        return "<category>notify</category>" //通知类型
+                + "<title>" + title + "</title>" //标题
+                + "<name>" + name + "</name>" //发送者
+                + "<time>" + df.format(new Date()) + "</time>" //发送时间
+                + "<content>" + content + "</content>"; //通知内容
+
     }
 
     /**

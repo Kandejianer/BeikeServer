@@ -17,5 +17,8 @@ public class Constant {
     public static final String TABLE_STUDENT = "accounts_student";
     public static final String TABLE_CLASS = "class";
     public static final String TABLE_SCHOOL = "school";
+    public static final String TABLE_NOTIFY_STUDENT = "notify_student";
+    public static final String TABLE_HOMEWORK_STUDENT = "homework_student";
+    public static final String TABLE_HOMEWORK_DETAIL_STUDENT = "homework_detail_student";
 
 }

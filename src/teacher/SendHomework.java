@@ -72,12 +72,15 @@ public class SendHomework extends HttpServlet {
             Homework hw = new Homework(subjects[i], optionAs[i], optionBs[i], optionCs[i], optionDs[i], keys[i]);
             Homework.homeworkList.add(hw);
         }
+        // save homework to database for further use
+        saveHomework2Database(userAl, size);
 
         // 待发送的作业
         String mainBody = assembleMainBody(size);
         // 由于homeworkList是静态变量，因此每次用完必须清空
         // 否则作业会堆积
         Homework.homeworkList.clear();
+
 
         // 执行发送
         String res = null;
@@ -92,7 +95,73 @@ public class SendHomework extends HttpServlet {
     }
 
     /**
+     * 作业入库
+     */
+    private void saveHomework2Database(ArrayList<String> classIdAl, String size) {
+
+        int hwId;
+
+        try {
+            Connection connect = DatabaseUtil.getConnection();
+            Statement statement = connect.createStatement();
+
+            ResultSet tempResult;
+            do {
+                // create one-and-only hwId if it has not been created before
+                hwId = (int) (Math.random() * 900 + 100);
+                String tempSql = "select * from " + Constant.TABLE_HOMEWORK_DETAIL_STUDENT + " where hwId='" + hwId + "'";
+                tempResult = statement.executeQuery(tempSql);
+            } while (tempResult.next());
+            // 存入homework_detail_student表
+            // 该表用于存放具体作业内容
+            for (Homework hw : Homework.homeworkList) {
+                String sqlInsert = "insert into " + Constant.TABLE_HOMEWORK_DETAIL_STUDENT
+                        + "(hwId,hw_subject,optionA,optionB,optionC,optionD,hw_key) "
+                        + "values('" + hwId + "','" + hw.subject + "','"
+                        + hw.optionA + "','"
+                        + hw.optionB + "','"
+                        + hw.optionC + "','"
+                        + hw.optionD + "','"
+                        + hw.key + "')";
+
+                int row1 = statement.executeUpdate(sqlInsert);
+                if (row1 == 1) {
+                    System.out.println("单条作业存储成功");
+                }
+            }
+
+            // 时间
+            SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+            // 存入homework_student表
+            // 该表用于存放作业基本信息
+            for (String aClassIdAl : classIdAl) {
+
+                String sqlInsert2Another = "insert into " + Constant.TABLE_HOMEWORK_STUDENT
+                        + "(classId,title,name,time,size,hwId) "
+                        + "values('"
+                        + aClassIdAl + "','"
+                        + title + "','"
+                        + name + "','"
+                        + df.format(new Date()) + "','"
+                        + Integer.parseInt(size) + "','"
+                        + hwId + "')";
+                int row2 = statement.executeUpdate(sqlInsert2Another);
+                if (row2 == 1) {
+                    System.out.println("作业基本信息存储成功");
+
+                }
+            }
+
+            connect.close();
+        } catch (SQLException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
      * 组装作业内容
+     *
      * @param size 作业量
      * @return 组装好的作业内容
      */
@@ -117,7 +186,6 @@ public class SendHomework extends HttpServlet {
 
     /**
      * 获取老师名字，以显示在通知栏description中
-     *
      */
     private String getTeacherName(String account) {
         String name = null;

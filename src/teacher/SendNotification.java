@@ -34,12 +34,18 @@ public class SendNotification extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.setCharacterEncoding("utf-8");
         response.setContentType("text/html;charset=utf-8");
-        //get params
+        // get params
         String account = request.getParameter("account");
         String title = request.getParameter("title");
         String content = request.getParameter("content");
         String userAccountStr = request.getParameter("to");
+        String classIds = request.getParameter("classId");
+
+        // 用户列表
         ArrayList<String> userAl = new ArrayList<>();
+        // classId列表
+        ArrayList<String> classIdAl = new ArrayList<>();
+        // 老师的名字
         String name = null;
 
         // 获取老师名字
@@ -69,8 +75,18 @@ public class SendNotification extends HttpServlet {
         } else {
             userAl.add(userAccountStr);
         }
+        // 设置classId列表
+        if (classIds.contains(",")) {
+            String[] classIdArr = classIds.split(",");
+            Collections.addAll(classIdAl, classIdArr);
+        } else {
+            classIdAl.add(classIds);
+        }
 
+        // 封装通知消息
         String finContent = assembleContent(name, title, content);
+        // 把封装好的通知消息存入数据库
+        saveContent2Database(classIdAl, finContent);
 
         // 发送结果
         String res = null;
@@ -87,8 +103,34 @@ public class SendNotification extends HttpServlet {
     }
 
     /**
+     * 通知入库
+     */
+    private void saveContent2Database(ArrayList<String> classIdAl, String finContent) {
+
+        try {
+            Connection connect = DatabaseUtil.getConnection();
+            Statement statement = connect.createStatement();
+
+            for (int i = 0; i < classIdAl.size(); i++) {
+                String sqlInsert = "insert into " + Constant.TABLE_NOTIFY_STUDENT
+                        + "(classId,notification) "
+                        + "values('" + classIdAl.get(i) + "','" + finContent + "')";
+
+                int row1 = statement.executeUpdate(sqlInsert);
+                if (row1 == 1) {
+                    System.out.println("通知" + i + "存储成功");
+                }
+            }
+
+            connect.close();
+        } catch (SQLException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    /**
      * 组装content
-     *
      */
     private String assembleContent(String name, String title, String content) {
 
@@ -103,16 +145,17 @@ public class SendNotification extends HttpServlet {
 
     }
 
+
     /**
      * 发送通知给指定UserAccounts
-     * @param name 老师的名字
-     * @param title 通知名称
-     * @param content 通知内容
+     *
+     * @param name            老师的名字
+     * @param title           通知名称
+     * @param content         通知内容
      * @param userAccountList 接受通知对象列表
-     * @return
-     * @throws Exception
      */
-    private String sendMessageToUserAccounts(String name, String title, String content, List<String> userAccountList) throws Exception {
+    private String sendMessageToUserAccounts(String name, String title, String
+            content, List<String> userAccountList) throws Exception {
         Constants.useOfficial();
         Sender sender = new Sender("dQrTRKGpbYyOkJXi13sfIA==");
         String description = name + "老师向您发送了通知";

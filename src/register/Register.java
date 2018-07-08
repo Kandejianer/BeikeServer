@@ -82,6 +82,7 @@ public class Register extends HttpServlet {
             if (row1 == 1) {
                 res = Constant.FLAG_SUCCESS;
             }
+            connect.close();
         } catch (SQLException | ClassNotFoundException e) {
             e.printStackTrace();
         }

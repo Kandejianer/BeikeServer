@@ -31,7 +31,7 @@ public class CheckCode extends HttpServlet {
         // 响应码
         String code = Constant.FLAG_FAILURE;
 
-        Connection connect;
+        Connection connect = null;
         try {
             connect = DatabaseUtil.getConnection();
 
@@ -45,6 +45,13 @@ public class CheckCode extends HttpServlet {
             }
         } catch (ClassNotFoundException | SQLException e) {
             e.printStackTrace();
+        } finally {
+            try {
+                connect.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+
         }
         response.getWriter().append(code);
     }

@@ -66,6 +66,7 @@ public class GetPhoto extends HttpServlet {
             if (result.next()) { // 获取列表成功
                 realPath = result.getString("ImagePath");
             }
+            connect.close();
 
         } catch (SQLException | ClassNotFoundException e) {
             e.printStackTrace();

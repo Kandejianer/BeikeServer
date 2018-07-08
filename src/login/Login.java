@@ -75,6 +75,9 @@ public class Login extends HttpServlet {
         if (result.next()) {
             code = Constant.FLAG_SUCCESS;
         }
+
+        connect.close();
+
         return code;
     }
 }

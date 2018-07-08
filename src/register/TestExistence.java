@@ -75,6 +75,7 @@ public class TestExistence extends HttpServlet {
             if (result.next()) { // 若存在，则该账号已被注册
                 res = Constant.FLAG_YES;
             }
+            connect.close();
         } catch (SQLException | ClassNotFoundException e) {
             e.printStackTrace();
         }

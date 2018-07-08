@@ -61,6 +61,7 @@ public class ChangeInfo extends HttpServlet {
             if (row == 1) {
                 code = Constant.FLAG_SUCCESS;
             }
+            connect.close();
         } catch (SQLException | ClassNotFoundException e) {
             e.printStackTrace();
         }

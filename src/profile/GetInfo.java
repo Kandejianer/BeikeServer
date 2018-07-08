@@ -97,6 +97,7 @@ public class GetInfo extends HttpServlet {
                 responseArray[4] = result.getString("School");
                 responseArray[5] = result.getString("Class");
             }
+            connect.close();
 
         }catch (SQLException | ClassNotFoundException e) {
             e.printStackTrace();

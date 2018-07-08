@@ -99,6 +99,7 @@ public class UploadPhoto extends HttpServlet {
             if (row1 == 1) {  //success
                 response = Constant.FLAG_SUCCESS;
             }
+            connect.close();
 
         } catch (SQLException | ClassNotFoundException e) {
             e.printStackTrace();

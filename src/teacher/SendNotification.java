@@ -39,12 +39,9 @@ public class SendNotification extends HttpServlet {
         String title = request.getParameter("title");
         String content = request.getParameter("content");
         String userAccountStr = request.getParameter("to");
-        String classIds = request.getParameter("classId");
 
         // 用户列表
         ArrayList<String> userAl = new ArrayList<>();
-        // classId列表
-        ArrayList<String> classIdAl = new ArrayList<>();
         // 老师的名字
         String name = null;
 
@@ -75,18 +72,11 @@ public class SendNotification extends HttpServlet {
         } else {
             userAl.add(userAccountStr);
         }
-        // 设置classId列表
-        if (classIds.contains(",")) {
-            String[] classIdArr = classIds.split(",");
-            Collections.addAll(classIdAl, classIdArr);
-        } else {
-            classIdAl.add(classIds);
-        }
 
         // 封装通知消息
         String finContent = assembleContent(name, title, content);
         // 把封装好的通知消息存入数据库
-        saveContent2Database(classIdAl, finContent);
+        saveContent2Database(userAl, finContent);
 
         // 发送结果
         String res = null;

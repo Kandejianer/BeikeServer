@@ -72,8 +72,10 @@ public class SendHomework extends HttpServlet {
             Homework hw = new Homework(subjects[i], optionAs[i], optionBs[i], optionCs[i], optionDs[i], keys[i]);
             Homework.homeworkList.add(hw);
         }
-        // save homework to database for further use
-        saveHomework2Database(userAl, size);
+        // save homework to database for further use.
+        // return value hwId is the one-and-only id in database
+        // that refers to that piece of homework
+        int hwId = saveHomework2Database(userAl, size);
 
         // 待发送的作业
         String mainBody = assembleMainBody(size);
@@ -89,17 +91,19 @@ public class SendHomework extends HttpServlet {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        // 返回结果格式:  flag,hwId
+        String finRes = res + "," + hwId;
 
         PrintWriter pw = response.getWriter();
-        pw.write(res);
+        pw.write(finRes);
     }
 
     /**
      * 作业入库
      */
-    private void saveHomework2Database(ArrayList<String> classIdAl, String size) {
-
-        int hwId;
+    private int saveHomework2Database(ArrayList<String> classIdAl, String size) {
+        // 为该条作业创建的数据库唯一的hwId
+        int hwId = 0;
 
         try {
             Connection connect = DatabaseUtil.getConnection();
@@ -157,6 +161,8 @@ public class SendHomework extends HttpServlet {
         } catch (SQLException | ClassNotFoundException e) {
             e.printStackTrace();
         }
+
+        return hwId;
     }
 
     /**

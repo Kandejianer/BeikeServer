@@ -14,8 +14,8 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-@WebServlet(name = "addNotify", urlPatterns = "/Student/AddNotify")
-public class addNotify extends HttpServlet {
+@WebServlet(name = "AddNotify", urlPatterns = "/Student/AddNotify")
+public class AddNotify extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
     }

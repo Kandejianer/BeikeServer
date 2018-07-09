@@ -29,16 +29,15 @@ public class GetHomeworkDetail extends HttpServlet {
         response.setContentType("text/html;charset=utf-8");
 
         // 获取参数
-        String classId = request.getParameter("classId");
         String hwId = request.getParameter("hwId");
 
-        response.getWriter().append(getNotify(classId, hwId));
+        response.getWriter().append(getNotify(hwId));
     }
 
     /**
      * 获取通知信息
      */
-    private String getNotify(String classId, String hwId) {
+    private String getNotify(String hwId) {
 
         StringBuilder sb = new StringBuilder();
         try {
@@ -47,7 +46,7 @@ public class GetHomeworkDetail extends HttpServlet {
 
             //assemble sqlQuery
             String sql = "select * from " + Constant.TABLE_HOMEWORK_DETAIL_STUDENT
-                    + " where classId='" + classId + "'" + "AND hwId='" + hwId + "'";
+                    + " where hwId='" + hwId + "'";
             //execute
             ResultSet result = statement.executeQuery(sql);
 

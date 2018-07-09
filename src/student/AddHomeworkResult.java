@@ -13,8 +13,9 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-@WebServlet(name = "AddHomework", urlPatterns = "/Student/AddHomework")
-public class AddHomework extends HttpServlet {
+@WebServlet( name = "AddHomeworkResult" , urlPatterns = "/Student/AddHomeworkResult")
+public class AddHomeworkResult extends HttpServlet {
+
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
     }
@@ -26,30 +27,26 @@ public class AddHomework extends HttpServlet {
         response.setContentType("text/html;charset=utf-8");
 
         // 获取参数
-        String stuId = request.getParameter("stuId");
-        String title = request.getParameter("title");
-        String name = request.getParameter("name");
-        String time = request.getParameter("time");
-        String size = request.getParameter("size");
         String hwId = request.getParameter("hwId");
+        String err = request.getParameter("err");
 
         // sql插入语句
         String sqlInsert = null;
         // 响应
         String res;
 
-        sqlInsert = "insert into " + Constant.TABLE_HOMEWORK_STUDENT
-                + "(stuId,title,name,time,size,hwId) "
-                + "values('" + stuId + "','" + title + "','" + name + "','" + time + "','" + size + "','" + hwId + "')";
+        sqlInsert = "insert into " + Constant.TABLE_HOMEWORK_RESULT
+                + "(hwId,err) "
+                + "values('" + hwId + "','" + err + "')";
 
-        // 执行插入
+        // 执行注册
         res = add(sqlInsert);
 
         response.getWriter().append(res);
     }
 
     /**
-     * 作业入库模块
+     * 提交作业结果模块
      *
      * @param sqlInsert
      * @return

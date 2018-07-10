@@ -31,8 +31,8 @@ public class SendHomework extends HttpServlet {
 
     // 老师名字
     private String name;
-
-    private String title = "您有新的作业";
+    // 作业标题
+    private String title;
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
@@ -46,6 +46,7 @@ public class SendHomework extends HttpServlet {
         // get params
         String account = request.getParameter("account");
         String userAccountStr = request.getParameter("to");
+        title = request.getParameter("title");
         String size = request.getParameter("size");
         String[] subjects = request.getParameterValues("subject");
         String[] optionAs = request.getParameterValues("optionA");
@@ -75,7 +76,7 @@ public class SendHomework extends HttpServlet {
         // save homework to database for further use.
         // return value hwId is the one-and-only id in database
         // that refers to that piece of homework
-        int hwId = saveHomework2Database(userAl, size);
+        saveHomework2Database(userAl, account, size);
 
         // 待发送的作业
         String mainBody = assembleMainBody(size);
@@ -91,17 +92,15 @@ public class SendHomework extends HttpServlet {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        // 返回结果格式:  flag,hwId
-        String finRes = res + "," + hwId;
 
         PrintWriter pw = response.getWriter();
-        pw.write(finRes);
+        pw.write(res);
     }
 
     /**
      * 作业入库
      */
-    private int saveHomework2Database(ArrayList<String> classIdAl, String size) {
+    private void saveHomework2Database(ArrayList<String> classIdAl, String account, String size) {
         // 为该条作业创建的数据库唯一的hwId
         int hwId = 0;
 
@@ -116,7 +115,7 @@ public class SendHomework extends HttpServlet {
                 String tempSql = "select * from " + Constant.TABLE_HOMEWORK_DETAIL_STUDENT + " where hwId='" + hwId + "'";
                 tempResult = statement.executeQuery(tempSql);
             } while (tempResult.next());
-            // 存入homework_detail_student表
+            /******************************* 存入homework_detail_student表 *****************************/
             // 该表用于存放具体作业内容
             for (Homework hw : Homework.homeworkList) {
                 String sqlInsert = "insert into " + Constant.TABLE_HOMEWORK_DETAIL_STUDENT
@@ -134,10 +133,19 @@ public class SendHomework extends HttpServlet {
                 }
             }
 
+            /******************************* 存hwId进account_teacher表 *****************************/
+            String sqlInsert2 = "UPDATE " + Constant.TABLE_TEACHER + " set hwId= CONCAT(hwId,'," + hwId + "')" +
+                    "  WHERE Account= '" + account + "'";
+
+            int row2 = statement.executeUpdate(sqlInsert2);
+            if (row2 == 1) {
+                System.out.println("单条作业hwId存储成功");
+            }
+
+            /******************************* 存入homework_student表 *****************************/
+
             // 时间
             SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-
-            // 存入homework_student表
             // 该表用于存放作业基本信息
             for (String aClassIdAl : classIdAl) {
 
@@ -150,8 +158,8 @@ public class SendHomework extends HttpServlet {
                         + df.format(new Date()) + "','"
                         + Integer.parseInt(size) + "','"
                         + hwId + "')";
-                int row2 = statement.executeUpdate(sqlInsert2Another);
-                if (row2 == 1) {
+                int row3 = statement.executeUpdate(sqlInsert2Another);
+                if (row3 == 1) {
                     System.out.println("作业基本信息存储成功");
 
                 }
@@ -161,8 +169,6 @@ public class SendHomework extends HttpServlet {
         } catch (SQLException | ClassNotFoundException e) {
             e.printStackTrace();
         }
-
-        return hwId;
     }
 
     /**

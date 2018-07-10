@@ -14,7 +14,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-@WebServlet(name = "CheckCode", urlPatterns = "/Register/Student/CheckCode")
+@WebServlet(urlPatterns = "/Register/Student/CheckCode")
 public class CheckCode extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 

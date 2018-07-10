@@ -90,6 +90,10 @@ public class GetHomeworkStatus extends HttpServlet {
 
             String str[] = hwId.split(",");
             Collections.addAll(hwIdList, str);
+            // 倒序一下hwIdList是为了让最后添加的作业最被查询
+            // 这样在客户端就会将最后添加的作业显示在最前面
+            // 增强体验吧~~
+            Collections.reverse(hwIdList);
 
             for (String hId : hwIdList) {
 

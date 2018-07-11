@@ -31,6 +31,7 @@ public class Register extends HttpServlet {
         String password = request.getParameter("password");
         String name = request.getParameter("name");
         String gender = request.getParameter("gender");
+        String stuId = request.getParameter("stuId");
 
         // sql插入语句
         String sqlInsert = null;
@@ -55,8 +56,8 @@ public class Register extends HttpServlet {
             }
             case Constant.ID_PARENT: {
                 sqlInsert = "insert into " + Constant.TABLE_PARENT
-                        + "(Account,Password,Name,Sex) "
-                        + "values('" + account + "','" + password + "','" + name + "','" + gender + "')";
+                        + "(Account,Password,Name,Sex,stuId) "
+                        + "values('" + account + "','" + password + "','" + name + "','" + gender + "','" + stuId + "')";
                 break;
             }
         }

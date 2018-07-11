@@ -29,6 +29,7 @@ public class AddHomeworkResult extends HttpServlet {
         // 获取参数
         String hwId = request.getParameter("hwId");
         String err = request.getParameter("err");
+        String stuId = request.getParameter("stuId");
 
         // sql插入语句
         String sqlInsert = null;
@@ -36,8 +37,8 @@ public class AddHomeworkResult extends HttpServlet {
         String res;
 
         sqlInsert = "insert into " + Constant.TABLE_HOMEWORK_RESULT
-                + "(hwId,err) "
-                + "values('" + hwId + "','" + err + "')";
+                + "(hwId,err,stuId) "
+                + "values('" + hwId + "','" + err + "','" + stuId +"')";
 
         // 执行注册
         res = add(sqlInsert);

@@ -104,9 +104,11 @@ public class GetHomeworkStatus extends HttpServlet {
                 // 获取到title
                 String title = null;
                 String size = null;
+                String classId = null;
                 if (rs.next()) {
                     title = rs.getString("title");
                     size = rs.getString("size");
+                    classId = rs.getString("classId");
                 }
 
                 // errorCount下标为题号，值为该题的错误人数
@@ -147,7 +149,7 @@ public class GetHomeworkStatus extends HttpServlet {
 
 
 
-                subRes = hId + "$" + title + "$" + rowCount + "$" + StringUtils.join(errorRateList, ",");
+                subRes = hId + "$" + classId + "$" + title + "$" + rowCount + "$" + StringUtils.join(errorRateList, ",");
                 subResList.add(subRes);
             }
             flag = Constant.FLAG_SUCCESS;
@@ -158,6 +160,5 @@ public class GetHomeworkStatus extends HttpServlet {
 
 
         return flag + "#" + StringUtils.join(subResList,"#");
-        //return flag + "#" + hwIdList.toString() + "%" + hwIdList.size();
     }
 }
